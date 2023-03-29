@@ -15,8 +15,8 @@ class Producer {
 
         const string topic = "dummy_topic_for_learning";
          
-         string[] users = { "pops", "dajve", "jyles", "devon", "granny", "grandad" };
-         string[] items = { "za-za", "alarm clock", "Scat-pack", "Patron", "batteries", "jumper cables" };
+         string[] users = { "service 1", "service 2", "service 3", "service 4", "service 5", "service 6" };
+         string[] items = { "message 1", "message 2", "message 3", "message 4", "message 5", "message 6" };
 
         using (var producer = new ProducerBuilder<string, string>(
                    configuration.AsEnumerable()).Build())
@@ -28,7 +28,8 @@ class Producer {
             {
                 var user = users[rnd.Next(users.Length)];
                 var item = items[rnd.Next(items.Length)];
-
+                
+                //sending the message/producing message
                 producer.Produce(topic, new Message<string, string> { Key = user, Value = item },
                     (deliveryReport) =>
                     {
