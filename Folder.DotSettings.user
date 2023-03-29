@@ -1,0 +1,13 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/usr/local/share/dotnet/sdk/7.0.202/MSBuild.dll</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=243a4ed9_002Dbdb5_002D4554_002Db357_002D36ae08a7f858/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="MarketOrchestratorTests_ReadGameDataFromFile_FileDoesntExist_ReturnsNull" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::916F134A-E58F-218D-45B5-C82ECCA1A234::net7.0::producerTests.JsonReaderUnit+MarketOrchestratorTests.MarketOrchestratorTests_ReadGameDataFromFile_FileDoesntExist_ReturnsNull&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d4442cce_002Dad8e_002D4d42_002Da860_002Df261ecfd13d8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="MarketOrchestratorTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::916F134A-E58F-218D-45B5-C82ECCA1A234::net7.0::producerTests.JsonReaderUnit+MarketOrchestratorTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
