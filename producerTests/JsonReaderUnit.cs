@@ -1,4 +1,8 @@
 using System.Reflection;
+using GameDataObject;
+using GameDataReader;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
+using Newtonsoft.Json;
 
 
 namespace producerTests;
@@ -7,6 +11,8 @@ public class JsonReaderUnit
 {
     public class MarketOrchestratorTests
     {
+        // private GameState _gameState = default!;
+
         [SetUp]
         public void Setup()
         {
@@ -27,12 +33,9 @@ public class JsonReaderUnit
         {
             var gameDataReader = new GameDataReader.GameDataReader();
 
-            // var gameData =
-            //     gameDataReader.ReadFromJson(
-            //         $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/producerTests/test.txt");
-            
             var gameData =
-                gameDataReader.ReadFromJson("/Users/dajve.echols/personalProjects/cSharp/kafka_basics/producerTests/TestData/test.txt");
+                gameDataReader.ReadFromJson(
+                    "/Users/dajve.echols/personalProjects/cSharp/kafka_basics/producerTests/TestData/test.txt");
 
             Assert.That(gameData, Is.EqualTo("Hello World"));
         }
@@ -43,7 +46,8 @@ public class JsonReaderUnit
             var gameDataReader = new GameDataReader.GameDataReader();
 
             var gameData =
-                gameDataReader.ReadFromJson("/Users/dajve.echols/personalProjects/cSharp/kafka_basics/producer/GameState.json");
+                gameDataReader.ReadFromJson(
+                    "/Users/dajve.echols/personalProjects/cSharp/kafka_basics/producer/GameState.json");
 
             var expectedJson =
                 "{\"MessageType\":5,\"Message\":{\"Data\":{\"Fields\":{\"StartTime\":" +
@@ -59,6 +63,79 @@ public class JsonReaderUnit
                 "\"ListValue\":null,\"KindCase\":3}}}},\"RampId\":\"10219666\"}";
 
             Assert.That(gameData, Is.EqualTo(expectedJson));
+        }
+
+        [Test]
+        public void MarketOrchestratorTests_Create_JSON_From_Class_Object_Returns_JSON_With_Different_Values()
+        {
+            // var gameState = new GameState
+            // {
+            //     new GameState.RootObject
+            //     {
+            //         MessageType = 0,
+            //         Message = new GameState.Message
+            //         {
+            //             Data = new GameState.Data
+            //             {
+            //                 Fields = new GameState.Fields
+            //                 {
+            //                     StartTime = new GameState.StartTime
+            //                     {
+            //                         NullValue = 0,
+            //                         NumberValue = 0,
+            //                         StringValue = "000",
+            //                         BoolValue = false,
+            //                         StructValue = null,
+            //                         ListValue = null,
+            //                         KindCase = 0
+            //                     },
+            //                     FixtureName = new GameState.FixtureName
+            //                     {
+            //                         NullValue = 0,
+            //                         NumberValue = 0,
+            //                         StringValue = "0",
+            //                         BoolValue = false,
+            //                         StructValue = null,
+            //                         ListValue = null,
+            //                         KindCase = 0
+            //                     },
+            //                     Sport = new GameState.Sport
+            //                     {
+            //                         NullValue = 0,
+            //                         NumberValue = 0,
+            //                         StringValue = "0",
+            //                         BoolValue = false,
+            //                         StructValue = null,
+            //                         ListValue = null,
+            //                         KindCase = 0
+            //                     },
+            //                     HomeTeam = new GameState.HomeTeam
+            //                     {
+            //                         NullValue = 0,
+            //                         NumberValue = 0,
+            //                         StringValue = "0",
+            //                         BoolValue = false,
+            //                         StructValue = null,
+            //                         ListValue = null,
+            //                         KindCase = 0
+            //                     },
+            //                     AwayTeam = new GameState.AwayTeam
+            //                     {
+            //                         NullValue = 0,
+            //                         NumberValue = 0,
+            //                         StringValue = "0",
+            //                         BoolValue = false,
+            //                         StructValue = null,
+            //                         ListValue = null,
+            //                         KindCase = 0
+            //                     }
+            //                 }
+            //             }
+            //         },
+            //         RampId = 00000000
+            //     }
+            // };
+            // string jsonString = JsonSerializer.Serialize(gameState);
         }
     }
 }

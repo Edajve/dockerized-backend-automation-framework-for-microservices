@@ -15,9 +15,11 @@ class Consumer {
             .AddIniFile(args[0])
             .Build();
 
+        //this is the client id LINK: https://confluent.cloud/environments/env-5w6wq8/clusters/lkc-1j3my6/clients/consumer-lag
         configuration["group.id"] = "kafka-dotnet-getting-started";
         configuration["auto.offset.reset"] = "earliest";
 
+        //this is the topic name LINK: https://confluent.cloud/environments/env-5w6wq8/clusters/lkc-1j3my6/topics
         const string topic = "dummy_topic_for_learning";
 
         CancellationTokenSource cts = new CancellationTokenSource();
