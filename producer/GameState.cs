@@ -1,4 +1,4 @@
-namespace GameDataObject;
+namespace producer;
 
     public class GameState
     {

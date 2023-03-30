@@ -1,7 +1,9 @@
-using Confluent.Kafka;
 using System;
 using System.Threading;
+using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+
+namespace consumer;
 
 class Consumer {
 
