@@ -1,6 +1,8 @@
-using Confluent.Kafka;
 using System;
+using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+
+namespace producer;
 
 class Producer {
     static void Main(string[] args)
@@ -15,8 +17,8 @@ class Producer {
 
         const string topic = "dummy_topic_for_learning";
          
-         string[] users = { "service 1", "service 2", "service 3", "service 4", "service 5", "service 6" };
-         string[] items = { "message 1", "message 2", "message 3", "message 4", "message 5", "message 6" };
+        string[] users = { "service 1", "service 2", "service 3", "service 4", "service 5", "service 6" };
+        string[] items = { "message 1", "message 2", "message 3", "message 4", "message 5", "message 6" };
 
         using (var producer = new ProducerBuilder<string, string>(
                    configuration.AsEnumerable()).Build())

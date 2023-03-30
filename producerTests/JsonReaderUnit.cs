@@ -1,8 +1,7 @@
 using System.Reflection;
-using GameDataObject;
-using GameDataReader;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Newtonsoft.Json;
+using producer;
 
 
 namespace producerTests;
@@ -21,7 +20,7 @@ public class JsonReaderUnit
         [Test]
         public void MarketOrchestratorTests_ReadGameDataFromFile_FileDoesntExist_ReturnsNull()
         {
-            var gameDataReader = new GameDataReader.GameDataReader();
+            var gameDataReader = new GameDataReader();
 
             var gameData = gameDataReader.ReadFromJson("doesntExist.json");
 
@@ -31,7 +30,7 @@ public class JsonReaderUnit
         [Test]
         public void MarketOrchestratorTests_ReadTestGameDataFromFile_Success()
         {
-            var gameDataReader = new GameDataReader.GameDataReader();
+            var gameDataReader = new GameDataReader();
 
             var gameData =
                 gameDataReader.ReadFromJson(
@@ -43,7 +42,7 @@ public class JsonReaderUnit
         [Test]
         public void MarketOrchestratorTests_ReadRealGameData_Success()
         {
-            var gameDataReader = new GameDataReader.GameDataReader();
+            var gameDataReader = new GameDataReader();
 
             var gameData =
                 gameDataReader.ReadFromJson(

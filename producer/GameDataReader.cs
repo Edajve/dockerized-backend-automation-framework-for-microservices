@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace GameDataReader
+namespace producer
 {
     public class GameDataReader
     {
