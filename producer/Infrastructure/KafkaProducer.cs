@@ -35,7 +35,7 @@ public class KafkaProducer
             Headers = headers
         };
 
-        _producer.Produce(TestConstants.Kafka.BlenderTopicName, payload, report =>
+        _producer.Produce(TestConstants.Kafka.KafkaPricingTopic, payload, report =>
         {
             Console.WriteLine(report.Error.Code != ErrorCode.NoError
                 ? $"KafkaProducer - Produce error - Code: {report.Error.Code}, Reason: {report.Error.Reason}"

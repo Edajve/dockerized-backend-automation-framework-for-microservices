@@ -6,27 +6,23 @@
         {
             public const string BootstrapServers = "localhost:29092";
             
-            public const string OpinionApplicatorTopicName = "pa.cbb.oa";
-            public const string OpinionApplicatorRulesChangedTopicName = "pa.cbb.oa.rules";
-            public const string PricingPlatformTopicName = "pa.cbb.oa.autotraderproducer";
-            public const string BlenderTopicName = "pa.cbb.blender";
+            public const string KafkaNflLiveTopic = "KAFKA_NFL_LIVE_TOPIC";
+            public const string KafkaNbaLiveTopic = "KAFKA_NBA_LIVE_TOPIC";
+            public const string GenuisLiveEvents= "genius_live_events";
+            public const string PricingModelData = "pricing_model_data";
+            public const string PricingPlayerGameData = "pricing_player_game_data";
+            public const string KafkaClientId = "rt-market-orchestrator";
+            public const string KafkaLiveEventsTopic = "live-events";
+            public const string KafkaPricingTopic = "pricing-data";
+            public const string KafkaGamePricingServers = "pricing_player_game_data";
         }
 
-        public static class Mysql
-        {
-            public const string Server = "localhost";
-            public const int Port = 33060;
-            public const string Username = "root";
-            public const string Password = "Password12!";
-            public const string DatabaseName = "pa-cbb-oa";
-            public const string RuleDimensionTableName = "RuleDimension";
-            public const string RuleTableName = "Rule";
-
-        }
         
-        public static class OpinionApplicator
+        
+        public static class MarketOrchestratorApplication
         {
-            public const string Url = "http://localhost:5000";
+            //public const string Url = "http://localhost:5000";
+            public const string Url = "http://localhost:5171";
         }
     }
 }

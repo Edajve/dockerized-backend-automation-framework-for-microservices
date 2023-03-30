@@ -11,127 +11,142 @@ namespace producer.Contexts;
 
 public class KafkaContext
 {
-    
-        public async Task InitAsync()
+    public async Task InitAsync()
+    {
+        await WaitForKafka();
+
+        using var adminClient = new AdminClientBuilder(new AdminClientConfig
+            { BootstrapServers = TestConstants.Kafka.BootstrapServers }).Build();
+
+        try
         {
-            await WaitForKafka();
-
-            using var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = TestConstants.Kafka.BootstrapServers }).Build();
-
-            try
+            var topics = new[]
             {
-                var topics = new[] { TestConstants.Kafka.OpinionApplicatorTopicName, TestConstants.Kafka.OpinionApplicatorRulesChangedTopicName, TestConstants.Kafka.PricingPlatformTopicName,  TestConstants.Kafka.BlenderTopicName };
+                TestConstants.Kafka.KafkaNbaLiveTopic, TestConstants.Kafka.KafkaNflLiveTopic,
+                TestConstants.Kafka.GenuisLiveEvents, TestConstants.Kafka.PricingModelData,
+                TestConstants.Kafka.PricingPlayerGameData
+            };
 
-                var deleted = await TryDeleteTopics(topics, adminClient);
+            var deleted = await TryDeleteTopics(topics, adminClient);
 
-                if (deleted)
+            if (deleted)
+            {
+                var created = await TryCreateTopics(topics, adminClient);
+                if (!created)
                 {
-                    var created = await TryCreateTopics(topics, adminClient);
-                    if (!created)
-                    {
-                        throw new Exception("Topics were not created");
-                    }
+                    throw new Exception("Topics were not created");
                 }
             }
-            catch (Exception e)
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+        }
+    }
+
+    public async Task TearDownAsync()
+    {
+        using var adminClient = new AdminClientBuilder(new AdminClientConfig
+            { BootstrapServers = TestConstants.Kafka.BootstrapServers }).Build();
+
+        try
+        {
+            await TryDeleteTopics(
+                new[]
+                {
+                    TestConstants.Kafka.KafkaNbaLiveTopic, TestConstants.Kafka.KafkaNflLiveTopic,
+                    TestConstants.Kafka.GenuisLiveEvents, TestConstants.Kafka.PricingModelData,
+                    TestConstants.Kafka.PricingPlayerGameData
+                }, adminClient);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+        }
+    }
+
+    private async Task<bool> TryCreateTopics(string[] topics, IAdminClient adminClient)
+    {
+        var metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
+
+        var topicsToCreate = new List<TopicSpecification>();
+        foreach (var topic in topics)
+        {
+            if (metadata.Topics.All(x => !string.Equals(x.Topic, topic, StringComparison.OrdinalIgnoreCase)))
             {
-                Debug.WriteLine(e);
+                topicsToCreate.Add(new TopicSpecification
+                {
+                    Name = topic,
+                    NumPartitions = 1,
+                    ReplicationFactor = 1
+                });
             }
         }
 
-        public async Task TearDownAsync()
+        await adminClient.CreateTopicsAsync(topicsToCreate);
+
+        var allTopicsCreated = false;
+        await TestHelper.WaitForConditionAsync(() =>
         {
-            using var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = TestConstants.Kafka.BootstrapServers }).Build();
+            metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
 
-            try
-            {
-                await TryDeleteTopics(new[] { TestConstants.Kafka.OpinionApplicatorTopicName, TestConstants.Kafka.OpinionApplicatorRulesChangedTopicName, TestConstants.Kafka.PricingPlatformTopicName,  TestConstants.Kafka.BlenderTopicName }, adminClient);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-        }
-
-        private async Task<bool> TryCreateTopics(string[] topics, IAdminClient adminClient)
-        {
-            var metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
-
-            var topicsToCreate = new List<TopicSpecification>();
-            foreach (var topic in topics)
-            {
-                if (metadata.Topics.All(x => !string.Equals(x.Topic, topic, StringComparison.OrdinalIgnoreCase)))
-                {
-                    topicsToCreate.Add(new TopicSpecification
-                    {
-                        Name = topic,
-                        NumPartitions = 1,
-                        ReplicationFactor = 1
-                    });
-                }
-            }
-
-            await adminClient.CreateTopicsAsync(topicsToCreate);
-
-            var allTopicsCreated = false;
-            await TestHelper.WaitForConditionAsync(() =>
-            {
-                metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
-
-                allTopicsCreated = topicsToCreate.All(topicToCreate => metadata.Topics.Any(topicMetadata => string.Equals(topicMetadata.Topic, topicToCreate.Name, StringComparison.OrdinalIgnoreCase)));
-
-                return allTopicsCreated;
-            });
+            allTopicsCreated = topicsToCreate.All(topicToCreate => metadata.Topics.Any(topicMetadata =>
+                string.Equals(topicMetadata.Topic, topicToCreate.Name, StringComparison.OrdinalIgnoreCase)));
 
             return allTopicsCreated;
+        });
+
+        return allTopicsCreated;
+    }
+
+    private async Task<bool> TryDeleteTopics(string[] topics, IAdminClient adminClient)
+    {
+        var metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
+
+        var topicsToDelete = new List<string>();
+        foreach (var topic in topics)
+        {
+            if (metadata.Topics.Any(x => string.Equals(x.Topic, topic)))
+            {
+                topicsToDelete.Add(topic);
+            }
         }
 
-        private async Task<bool> TryDeleteTopics(string[] topics, IAdminClient adminClient)
+        if (topicsToDelete.Any())
         {
-            var metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
+            await adminClient.DeleteTopicsAsync(topicsToDelete.ToArray());
+        }
 
-            var topicsToDelete = new List<string>();
-            foreach (var topic in topics)
-            {
-                if (metadata.Topics.Any(x => string.Equals(x.Topic, topic)))
-                {
-                    topicsToDelete.Add(topic);
-                }
-            }
+        var allTopicDeleted = false;
+        await TestHelper.WaitForConditionAsync(() =>
+        {
+            metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
 
-            if (topicsToDelete.Any())
-            {
-                await adminClient.DeleteTopicsAsync(topicsToDelete.ToArray());
-            }
-
-            var allTopicDeleted = false;
-            await TestHelper.WaitForConditionAsync(() =>
-            {
-                metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
-
-                allTopicDeleted = topicsToDelete.All(topicToDelete => metadata.Topics.All(topicMetadata => !string.Equals(topicMetadata.Topic, topicToDelete, StringComparison.OrdinalIgnoreCase)));
-
-                return allTopicDeleted;
-            });
+            allTopicDeleted = topicsToDelete.All(topicToDelete => metadata.Topics.All(topicMetadata =>
+                !string.Equals(topicMetadata.Topic, topicToDelete, StringComparison.OrdinalIgnoreCase)));
 
             return allTopicDeleted;
-        }
+        });
 
-        private async Task WaitForKafka()
+        return allTopicDeleted;
+    }
+
+    private async Task WaitForKafka()
+    {
+        await TestHelper.WaitForConditionAsync(() =>
         {
-            await TestHelper.WaitForConditionAsync(() =>
+            try
             {
-                try
-                {
-                    using var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = TestConstants.Kafka.BootstrapServers }).Build();
-                    var metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
+                using var adminClient = new AdminClientBuilder(new AdminClientConfig
+                    { BootstrapServers = TestConstants.Kafka.BootstrapServers }).Build();
+                var metadata = adminClient.GetMetadata(TimeSpan.FromMilliseconds(1000));
 
-                    return metadata.Topics.Any(x => x.Topic == TestConstants.Kafka.OpinionApplicatorTopicName);
-                }
-                catch
-                {
-                    return false;
-                }
-            });
-        }
+                return metadata.Topics.Any(x => x.Topic == TestConstants.Kafka.KafkaPricingTopic);
+            }
+            catch
+            {
+                return false;
+            }
+        });
+    }
 }
